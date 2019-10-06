@@ -1,5 +1,7 @@
 {
   "name": "hll-mobile-client",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

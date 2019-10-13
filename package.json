@@ -3,6 +3,18 @@
   "version": "0.0.1",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false,
+    "crypto": false,
+    "stream": false,
+    "http": false,
+    "tls": false,
+    "zlib": false,
+    "https": false,
+    "net": false
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -21,10 +33,25 @@
     "@angular/platform-browser-dynamic": "~8.1.2",
     "@angular/router": "~8.1.2",
     "@ionic-native/core": "^5.0.0",
+    "@ionic-native/safari-view-controller": "^5.15.0",
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^4.7.1",
+    "@ionic/storage": "^2.2.0",
+    "buffer": "^5.4.3",
+    "cordova-ios": "^4.5.5",
+    "cordova-plugin-customurlscheme": "git+https://github.com/EddyVerbruggen/LaunchMyApp-PhoneGap-Plugin.git",
+    "cordova-plugin-device": "^2.0.2",
+    "cordova-plugin-ionic-keyboard": "^2.2.0",
+    "cordova-plugin-ionic-webview": "^4.1.2",
+    "cordova-plugin-safariviewcontroller": "^1.6.0",
+    "cordova-plugin-splashscreen": "^5.0.2",
+    "cordova-plugin-statusbar": "^2.4.2",
+    "cordova-plugin-whitelist": "^1.3.3",
+    "cordova-sqlite-storage": "^3.4.0",
     "core-js": "^2.5.4",
+    "crypto": "^1.0.1",
+    "crypto-browserify": "^3.12.0",
     "rxjs": "~6.5.1",
     "tslib": "^1.9.0",
     "zone.js": "~0.9.1"
@@ -55,5 +82,26 @@
     "tslint": "~5.15.0",
     "typescript": "~3.4.3"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-safariviewcontroller": {},
+      "cordova-plugin-customurlscheme": {
+        "URL_SCHEME": "mycoolapp",
+        "ANDROID_SCHEME": "io.ionic.starter",
+        "ANDROID_HOST": "dev-kfaat8-8.auth0.com",
+        "ANDROID_PATHPREFIX": "/cordova/io.ionic.starter/callback"
+      },
+      "cordova-sqlite-storage": {},
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-keyboard": {}
+    },
+    "platforms": [
+      "ios"
+    ]
+  }
 }

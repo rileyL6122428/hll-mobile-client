@@ -54,6 +54,7 @@
       true,
       "as-needed"
     ],
+    "no-string-literal": false,
     "object-literal-sort-keys": false,
     "ordered-imports": false,
     "quotemark": [
@@ -69,6 +70,11 @@
     "use-lifecycle-interface": true,
     "use-pipe-transform-interface": true,
     "one-variable-per-declaration": false,
+    "variable-name": {
+      "options": [
+        "allow-leading-underscore",
+      ]
+    },
     "component-class-suffix": [true, "Page", "Component"],
     "directive-class-suffix": true,
     "directive-selector": [

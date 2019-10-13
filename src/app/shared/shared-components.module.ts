@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppLogoComponent } from './app-logo/app-logo.component';
 
-
-
 @NgModule({
   imports: [
     CommonModule
@@ -15,4 +13,4 @@ import { AppLogoComponent } from './app-logo/app-logo.component';
     AppLogoComponent
   ],
 })
-export class SharedModule { }
+export class SharedComponentsModule { }

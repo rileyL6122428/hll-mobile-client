@@ -1,6 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, InjectionToken, Inject } from '@angular/core';
 import { SafariViewController } from '@ionic-native/safari-view-controller/ngx';
 import {  ReplaySubject, Observable } from 'rxjs';
+
+export interface AuthServiceConfig {
+  authorizationUrl: string;
+}
+
+export const AUTH_SERVICE_CONFIG_TOKEN = new InjectionToken('AUTH_SERVICE_CONFIG_TOKEN');
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +17,8 @@ export class AuthService {
   private authorizationResult: ReplaySubject<boolean>;
 
   constructor(
-    private safariViewController: SafariViewController
+    private safariViewController: SafariViewController,
+    @Inject(AUTH_SERVICE_CONFIG_TOKEN) private config: AuthServiceConfig
   ) {
     this.authorizationResult = new ReplaySubject<boolean>(1);
   }
@@ -58,7 +65,7 @@ export class AuthService {
       .then((available: boolean) => {
         if (available) {
           this.safariViewController.show({
-            url: 'http://192.168.1.70:4200/#/home?mobile-login=true',
+            url: this.config.authorizationUrl,
             hidden: false,
             animated: true,
             transition: 'curl',

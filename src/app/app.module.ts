@@ -11,6 +11,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { SharedServicesModule } from './shared/shared-services.module';
 import { SafariViewController } from '@ionic-native/safari-view-controller/ngx';
 
+import { AppConfigModule } from './app-config.module';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -18,7 +20,8 @@ import { SafariViewController } from '@ionic-native/safari-view-controller/ngx';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    SharedServicesModule
+    SharedServicesModule,
+    AppConfigModule
   ],
   providers: [
     StatusBar,

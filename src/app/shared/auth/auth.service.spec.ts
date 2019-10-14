@@ -39,14 +39,28 @@ describe('AuthService', () => {
   });
 
   describe('#authorize', () => {
-    let availabilityResolver;
+    let browserAvailabilityResolver;
+    let successUrl;
+    let failureUrl;
 
     beforeEach(() => {
       (window as any).handleOpenURL = undefined;
       safariViewController
         .isAvailable.and.returnValue(new Promise((resolve) => {
-          availabilityResolver = resolve;
+          browserAvailabilityResolver = resolve;
         }));
+
+      successUrl = 'mycoolapp://callback' +
+        '#access_token=EXAMPLE_ACCESS_TOKEN' +
+        '&expires_in=EXAMPLE_EXPIRES_IN' +
+        '&token_type=Bearer' +
+        '&state=EXAMPLE_STATE' +
+        '&id_token=EXAMPLE_ID_TOKEN';
+
+      failureUrl = 'mycoolapp://callback' +
+        '#error=true' +
+        'errorMessage="Auth service denied the request"' +
+        '&state=EXAMPLE_STATE';
     });
 
     it('sets a handleOpenURL listener on the window', () => {
@@ -56,9 +70,9 @@ describe('AuthService', () => {
 
     it('directs the user\'s browser to the login location when safariBrowser is available', (done) => {
       auth.authorize().subscribe();
-      setTimeout(() => {
-        availabilityResolver(true);
-      }, 5);
+      browserAvailabilityResolver(true);
+
+      const shortWait = 1;
       setTimeout(() => {
         expect(safariViewController.show).toHaveBeenCalledWith({
           url: 'EXAMPLE_AUTHORIZATION_URL',
@@ -69,11 +83,39 @@ describe('AuthService', () => {
           tintColor: '#ff0000'
         });
         done();
-      }, 10);
+      }, shortWait);
+    });
+
+    it('emits true when url passed to handleOpenURL listener contains an id_token', (done) => {
+      auth.authorize().subscribe((result: boolean) => {
+        expect(result).toBe(true);
+        done();
+      });
+      _getHandleOpenURLCallback()(successUrl);
+    });
+
+    it('emits false when url passed to handleOpenURL listener contains an id_token', (done) => {
+      auth.authorize().subscribe((result: boolean) => {
+        expect(result).toBe(false);
+        done();
+      });
+      _getHandleOpenURLCallback()(failureUrl);
+    });
+
+    it('saves the id_token when url passed to handleOpenURL listener contains an id_token', (done) => {
+      auth.authorize().subscribe(() => {
+        expect(auth.idToken).toEqual('EXAMPLE_ID_TOKEN');
+        done();
+      });
+      _getHandleOpenURLCallback()(successUrl);
     });
 
     afterEach(() => {
       (window as any).handleOpenURL = undefined;
     });
   });
+
+  function _getHandleOpenURLCallback(): (url: string) => void {
+    return (window as any).handleOpenURL;
+  }
 });

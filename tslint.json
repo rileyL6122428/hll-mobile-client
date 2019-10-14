@@ -72,7 +72,7 @@
     "one-variable-per-declaration": false,
     "variable-name": {
       "options": [
-        "allow-leading-underscore",
+        "allow-leading-underscore"
       ]
     },
     "component-class-suffix": [true, "Page", "Component"],

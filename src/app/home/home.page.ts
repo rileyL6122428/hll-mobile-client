@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../shared/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -9,15 +10,16 @@ import { AuthService } from '../shared/auth/auth.service';
 export class HomePage {
 
   constructor(
-    private auth: AuthService
+    private auth: AuthService,
+    private router: Router
   ) {}
 
   login(): void {
-    this.auth.authorize().subscribe(authResult => {
+    this.auth.authorize().subscribe((authResult: boolean) => {
       if (authResult) {
-        alert(`AUTH SUCCESSFUL: ${this.auth.idToken}`);
+        this.router.navigate(['/profile']);
       } else {
-        alert('AUTH FAILURE OCCURRED');
+        alert('Login failed. Try logging in later.');
       }
     });
   }

@@ -86,6 +86,21 @@ describe('AuthService', () => {
       }, shortWait);
     });
 
+    it('alerts the user of failure when safariBrowser is unavailable', (done) => {
+      const originalAlertFunction = window.alert;
+      spyOn(window, 'alert');
+
+      auth.authorize().subscribe();
+      browserAvailabilityResolver(false);
+
+      const shortWait = 1;
+      setTimeout(() => {
+        expect(window.alert).toHaveBeenCalledWith('Sign in failed. Please try again later.');
+        window.alert = originalAlertFunction;
+        done();
+      }, shortWait);
+    });
+
     it('emits true when url passed to handleOpenURL listener contains an id_token', (done) => {
       auth.authorize().subscribe((result: boolean) => {
         expect(result).toBe(true);

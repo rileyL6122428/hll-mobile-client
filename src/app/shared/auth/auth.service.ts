@@ -80,6 +80,8 @@ export class AuthService {
                 console.log('Closed');
               }
             });
+        } else {
+          alert('Sign in failed. Please try again later.');
         }
       });
   }

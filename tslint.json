@@ -75,6 +75,7 @@
         "allow-leading-underscore"
       ]
     },
+    "no-unused-variable": true,
     "component-class-suffix": [true, "Page", "Component"],
     "directive-class-suffix": true,
     "directive-selector": [

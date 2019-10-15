@@ -1,9 +1,7 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { SafariViewController } from '@ionic-native/safari-view-controller/ngx';
-import { AuthService } from './shared/auth/auth.service';
 
 @Component({
   selector: 'app-root',

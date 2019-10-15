@@ -32,14 +32,11 @@ export class AuthService {
   }
 
   private get authRedirectCallbackSet(): boolean {
-    return (window as any).handleOpenURL;
+    return !!((window as any).handleOpenURL);
   }
 
   private setAuthRedirectCallback(): void {
     (window as any).handleOpenURL = (url: string) => {
-      console.log('HANDLE OPEN URL FIRED');
-      console.log('HERE IS THE VALUE OF THE URL PASSED TO HANDLER:');
-      console.log(url);
       this.safariViewController.hide();
       const authorized = this.handleAuthorizationResult(url);
       this.authorizationResult.next(authorized);
@@ -47,14 +44,14 @@ export class AuthService {
   }
 
   private handleAuthorizationResult(url: string): boolean {
-    const hashParams = {};
-    url
+    const hashParams = url
       .split('#')[1]
       .split('&')
       .map((keyValueString) => keyValueString.split('='))
-      .forEach(([key, value]) => {
-        hashParams[key] = value;
-      });
+      .reduce((hashParmasAccum, [key, value]) => {
+        hashParmasAccum[key] = value;
+        return hashParmasAccum;
+      }, {});
 
     this._idToken = hashParams['id_token'];
     return 'id_token' in hashParams;

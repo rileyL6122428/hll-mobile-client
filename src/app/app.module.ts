@@ -8,6 +8,10 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { SharedServicesModule } from './shared/shared-services.module';
+import { SafariViewController } from '@ionic-native/safari-view-controller/ngx';
+
+import { AppConfigModule } from './app-config.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -15,12 +19,15 @@ import { AppRoutingModule } from './app-routing.module';
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
-    AppRoutingModule
+    AppRoutingModule,
+    SharedServicesModule,
+    AppConfigModule
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    SafariViewController
   ],
   bootstrap: [AppComponent]
 })

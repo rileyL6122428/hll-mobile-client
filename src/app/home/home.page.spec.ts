@@ -7,7 +7,7 @@ import { AuthService } from '../shared/auth/auth.service';
 import { Router } from '@angular/router';
 import { Observable, Observer } from 'rxjs';
 
-fdescribe('HomePage', () => {
+describe('HomePage', () => {
   let component: HomePage;
   let fixture: ComponentFixture<HomePage>;
   let authService: any;

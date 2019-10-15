@@ -15,8 +15,8 @@ export class HomePage {
   ) {}
 
   login(): void {
-    this.auth.authorize().subscribe((authResult: boolean) => {
-      if (authResult) {
+    this.auth.authorize().subscribe((authSuccessful: boolean) => {
+      if (authSuccessful) {
         this.router.navigate(['/profile']);
       } else {
         alert('Login failed. Try logging in later.');

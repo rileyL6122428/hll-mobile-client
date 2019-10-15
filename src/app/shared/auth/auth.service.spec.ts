@@ -94,7 +94,7 @@ describe('AuthService', () => {
       _getHandleOpenURLCallback()(successUrl);
     });
 
-    it('emits false when url passed to handleOpenURL listener contains an id_token', (done) => {
+    it('emits false when url passed to handleOpenURL listener is missing an id_token', (done) => {
       auth.authorize().subscribe((result: boolean) => {
         expect(result).toBe(false);
         done();

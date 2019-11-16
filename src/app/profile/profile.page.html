@@ -1,9 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>profile</ion-title>
+    <ion-title>Tracks</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <hll-track-list
+    [tracks]="tracks"
+    (play)="play($event)"
+    (delete)="confirmDeleteTrack($event)">
+  </hll-track-list>
 </ion-content>

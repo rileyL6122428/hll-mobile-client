@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../shared/auth/auth.service';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -15,6 +16,14 @@ export class HomePage {
   ) {}
 
   login(): void {
+    if (environment.skipAuth) {
+      this.router.navigateByUrl('profile');
+    } else {
+      this.authorize();
+    }
+  }
+
+  private authorize(): void {
     this.auth.authorize().subscribe((authSuccessful: boolean) => {
       if (authSuccessful) {
         this.router.navigate(['/profile']);

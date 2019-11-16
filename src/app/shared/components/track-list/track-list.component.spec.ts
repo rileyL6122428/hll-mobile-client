@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { TrackListComponent } from './track-list.component';
 import { Track } from './track.model';
 
-fdescribe('TrackListComponent', () => {
+describe('TrackListComponent', () => {
   let component: TrackListComponent;
   let fixture: ComponentFixture<TrackListComponent>;
 
@@ -25,7 +25,7 @@ fdescribe('TrackListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Scenario: Inputted tracks are null', () => {
+  describe('Inputted tracks are null', () => {
     let skeletonData: null[];
 
     beforeEach(() => {
@@ -78,10 +78,10 @@ fdescribe('TrackListComponent', () => {
     });
   });
 
-  describe('Scenarios: Inputted track are not null', () => {
+  describe('Inputted track are not null', () => {
     let tracks: Track[];
 
-    beforeEach(() => {
+    beforeEach(async(() => {
       tracks = [
         {
           name: 'EXAMPLE_TRACK_NAME_1',
@@ -101,7 +101,7 @@ fdescribe('TrackListComponent', () => {
 
       component.tracks = tracks;
       fixture.detectChanges();
-    });
+    }));
 
     it('renders a list of track names', () => {
       const contentElements = fixture

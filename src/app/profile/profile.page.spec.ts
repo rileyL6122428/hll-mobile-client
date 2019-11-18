@@ -1,22 +1,22 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { fakeSchedulers } from 'rxjs-marbles/jasmine/angular';
-import { ProfilePage } from './profile.page';
-import { TrackHttpClient, trackClientConfigToken } from 'hll-shared-client';
-import { AlertController } from '@ionic/angular';
-import { Observable, Observer } from 'rxjs';
-import { Track } from '../shared/components/track-list/track.model';
-import { MockComponent } from 'ng-mocks';
-import { TrackListComponent } from '../shared/components/track-list/track-list.component';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { AlertController } from '@ionic/angular';
+import { TrackHttpClient } from 'hll-shared-client';
+import { MockComponent } from 'ng-mocks';
+import { Observable, Observer } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { TrackListComponent } from '../shared/components/track-list/track-list.component';
+import { Track } from '../shared/components/track-list/track.model';
+import { ProfilePage } from './profile.page';
 
-fdescribe('ProfilePage', () => {
+describe('ProfilePage', () => {
   let component: ProfilePage;
   let fixture: ComponentFixture<ProfilePage>;
 
   let alertControllerMock: { create: jasmine.Spy };
-  let alertPromise: {
+  let alertPromise: Promise<any>;
+  let alertPromiseControls: {
     resolve: (val: any) => void,
     reject: (val: any) => void
   };
@@ -110,21 +110,37 @@ fdescribe('ProfilePage', () => {
   });
 
   describe('Track Deletion', () => {
-    it('renders a modal when a delete track event is emitted', () => {
+    it('renders a modal with appropriate config when a delete track event is emitted', () => {
       const secondTrack = fetchedTracks[1];
       _getTrackListComponent().delete.emit(secondTrack);
       fixture.detectChanges();
 
       expect(alertControllerMock.create).toHaveBeenCalled();
-      const [alert] = alertControllerMock.create.calls.first().args;
-      expect(alert.header)
+      const [alertConfig] = alertControllerMock.create.calls.first().args;
+      expect(alertConfig.header)
         .toEqual(`Are you sure you want to delete ${secondTrack.name}?`);
-      expect(alert.message)
+      expect(alertConfig.message)
         .toEqual(`This decision cannot be reversed.`);
-      expect(alert.buttons.length).toBe(2);
-      expect(alert.buttons[0].text).toEqual('Cancel');
-      expect(alert.buttons[1].text).toEqual('Delete');
+      expect(alertConfig.buttons.length).toBe(2);
+      expect(alertConfig.buttons[0].text).toEqual('Cancel');
+      expect(alertConfig.buttons[1].text).toEqual('Delete');
     });
+
+    it('presents "delete track" modal after it is configured', (done) => {
+      const secondTrack = fetchedTracks[1];
+      _getTrackListComponent().delete.emit(secondTrack);
+      fixture.detectChanges();
+
+      const alert = jasmine.createSpyObj('alert', ['present']);
+      alertPromiseControls.resolve(alert);
+      alertPromise.then(() => {
+        expect(alert.present).toHaveBeenCalled();
+        done();
+      });
+    });
+
+    xit('closes modal when cancel button is clicked');
+    xit('deletes track when Delete button is clicked');
   });
 
   function _stubTrackClient() {
@@ -136,9 +152,13 @@ fdescribe('ProfilePage', () => {
 
   function _stubAlertController() {
     alertControllerMock = TestBed.get(AlertController);
-    alertControllerMock.create.and.returnValue(new Promise((resolve, reject) => {
-      alertPromise = { resolve, reject };
-    }));
+    alertPromise = new Promise((resolve, reject) => {
+      alertPromiseControls = { resolve, reject };
+    });
+    alertControllerMock.create.and.returnValue(alertPromise);
+    // alertControllerMock.create.and.returnValue(new Promise((resolve, reject) => {
+    //   alertPromise = { resolve, reject };
+    // }));
   }
 
   function _getTrackListComponent(): TrackListComponent {

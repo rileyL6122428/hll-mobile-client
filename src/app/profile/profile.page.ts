@@ -3,6 +3,8 @@ import { TrackHttpClient } from 'hll-shared-client';
 import { Track } from '../shared/components/track-list/track.model';
 import { AlertController } from '@ionic/angular';
 import { zip, timer } from 'rxjs';
+import { AuthService } from '../shared/auth/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'hll-profile',
@@ -25,7 +27,8 @@ export class ProfilePage implements OnInit {
     const tracks$ = this.trackClient.getTracks({
       userId: 'rileylittlefield@ymail.com'
     });
-    const minimumDelay$ = timer(1000);
+
+    const minimumDelay$ = timer(environment.minGetTracksDelay);
 
     zip(tracks$, minimumDelay$)
       .subscribe(([tracks]) => {

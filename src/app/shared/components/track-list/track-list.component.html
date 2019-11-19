@@ -1,18 +1,35 @@
 <ion-item-group>
   <ion-item-sliding *ngFor="let track of tracks">
     <ion-item-options side="start">
-      <ion-item-option
-        class="play-button"
-        color="secondary"
-        (click)="emitPlay(track)">
-          Play
-      </ion-item-option>
+      <ng-container *ngIf="track !== playingTrack; else pauseButton">
+        <ion-item-option
+          class="play-button"
+          color="secondary"
+          (click)="emitPlay(track)">
+            Play
+        </ion-item-option>
+      </ng-container>
+      <ng-template #pauseButton>
+        <ion-item-option
+          class="pause-button"
+          color="secondary"
+          (click)="emitPause(track)">
+            Stop
+        </ion-item-option>
+      </ng-template>
     </ion-item-options>
   
     <ion-item>
       <ion-label>
         <ng-container *ngIf="track; else skeleton">
           <span class="track-name">{{track.name}}</span>
+          <ion-progress-bar
+            *ngIf="track === playingTrack"
+            value="0.5"
+            buffer=".65"
+            color="secondary"
+            type="determinate">
+          </ion-progress-bar>
         </ng-container>
         
         <ng-template #skeleton>

@@ -13,6 +13,7 @@ import { environment } from 'src/environments/environment';
 export class ProfilePage implements OnInit {
 
   tracks: Track[];
+  playingTrack: Track;
 
   constructor(
     private trackClient: TrackHttpClient,
@@ -33,10 +34,6 @@ export class ProfilePage implements OnInit {
       .subscribe(([tracks]) => {
         this.tracks = tracks as Track[];
       });
-  }
-
-  play(track: Track): void {
-    console.log(`USER REQUESTED TO PLAY TRACK: ${track.name}`);
   }
 
   confirmDeleteTrack(track: Track): void {

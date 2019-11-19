@@ -7,7 +7,9 @@
 <ion-content>
   <hll-track-list
     [tracks]="tracks"
-    (play)="play($event)"
+    [playingTrack]="playingTrack"
+    (play)="playingTrack = $event"
+    (pause)="playingTrack = undefined"
     (delete)="confirmDeleteTrack($event)">
   </hll-track-list>
 </ion-content>

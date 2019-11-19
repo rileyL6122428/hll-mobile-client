@@ -94,7 +94,7 @@ describe('ProfilePage', () => {
       });
     });
 
-    it('renders tracks in tracklist when tracks call completes', (done) => {
+    it('renders tracks in tracklist when "fetch tracks" API call completes', (done) => {
       getTracksObserver.next(fetchedTracks);
       fixture.detectChanges();
 
@@ -110,7 +110,7 @@ describe('ProfilePage', () => {
   });
 
   describe('Track Deletion', () => {
-    it('renders a modal with appropriate config when a delete track event is emitted', () => {
+    it('renders a modal with appropriate config when a "delete track" event is emitted', () => {
       const secondTrack = fetchedTracks[1];
       _getTrackListComponent().delete.emit(secondTrack);
       fixture.detectChanges();
@@ -156,9 +156,6 @@ describe('ProfilePage', () => {
       alertPromiseControls = { resolve, reject };
     });
     alertControllerMock.create.and.returnValue(alertPromise);
-    // alertControllerMock.create.and.returnValue(new Promise((resolve, reject) => {
-    //   alertPromise = { resolve, reject };
-    // }));
   }
 
   function _getTrackListComponent(): TrackListComponent {

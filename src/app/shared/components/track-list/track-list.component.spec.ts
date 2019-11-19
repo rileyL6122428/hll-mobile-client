@@ -43,13 +43,13 @@ describe('TrackListComponent', () => {
       expect(contentElements.length).toBe(3);
     });
 
-    it('does not emit a play event when selected track is null', () => {
+    it('does not emit a play event when play button is clicked', () => {
       const emitPlaySpy = spyOn(component.play, 'next');
 
       const playButtons = fixture
         .debugElement
         .nativeElement
-        .querySelectorAll('ion-item-sliding ion-item-options[side="start"] ion-item-option');
+        .querySelectorAll('.play-button');
 
       Array
         .from(playButtons)
@@ -60,18 +60,18 @@ describe('TrackListComponent', () => {
       expect(emitPlaySpy).not.toHaveBeenCalled();
     });
 
-    it('does not emit a delete event when selected track is null', () => {
+    it('does not emit a delete event when delete button is clicked', () => {
       const emitDeleteSpy = spyOn(component.delete, 'next');
 
       const deleteButtons = fixture
         .debugElement
         .nativeElement
-        .querySelectorAll('ion-item-sliding ion-item-options[side="end"] ion-item-option');
+        .querySelectorAll('.delete-button');
 
       Array
         .from(deleteButtons)
-        .forEach((playButtonElement: HTMLElement) => {
-          playButtonElement.click();
+        .forEach((deleteButtonElement: HTMLElement) => {
+          deleteButtonElement.click();
           fixture.detectChanges();
         });
       expect(emitDeleteSpy).not.toHaveBeenCalled();
@@ -107,7 +107,7 @@ describe('TrackListComponent', () => {
       const contentElements = fixture
         .debugElement
         .nativeElement
-        .querySelectorAll('ion-item-sliding ion-item');
+        .querySelectorAll('.track-name');
 
       expect(contentElements.length).toBe(2);
       expect(contentElements[0].innerText).toContain('EXAMPLE_TRACK_NAME_1');
@@ -115,16 +115,16 @@ describe('TrackListComponent', () => {
     });
 
     it('emits a play event when play button is clicked', (done) => {
-      component.play.subscribe((track: Track) => {
+      component.play.subscribe((emittedTrack: Track) => {
         const secondTrack = tracks[1];
-        expect(track).toBe(secondTrack);
+        expect(emittedTrack).toBe(secondTrack);
         done();
       });
 
       const playButtons = fixture
         .debugElement
         .nativeElement
-        .querySelectorAll('ion-item-sliding ion-item-options[side="start"] ion-item-option');
+        .querySelectorAll('.play-button');
 
       const secondPlayButton = playButtons[1];
       secondPlayButton.click();
@@ -132,16 +132,16 @@ describe('TrackListComponent', () => {
     });
 
     it('emits a delete event when delete button is clicked', (done) => {
-      component.delete.subscribe((track: Track) => {
+      component.delete.subscribe((emittedTrack: Track) => {
         const firstTrack = tracks[0];
-        expect(track).toBe(firstTrack);
+        expect(emittedTrack).toBe(firstTrack);
         done();
       });
 
       const playButtons = fixture
         .debugElement
         .nativeElement
-        .querySelectorAll('ion-item-sliding ion-item-options[side="end"] ion-item-option');
+        .querySelectorAll('.delete-button');
 
       const firstPlayButton = playButtons[0];
       firstPlayButton.click();

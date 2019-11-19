@@ -2,6 +2,7 @@
   <ion-item-sliding *ngFor="let track of tracks">
     <ion-item-options side="start">
       <ion-item-option
+        class="play-button"
         color="secondary"
         (click)="emitPlay(track)">
           Play
@@ -11,7 +12,7 @@
     <ion-item>
       <ion-label>
         <ng-container *ngIf="track; else skeleton">
-          {{track.name}}
+          <span class="track-name">{{track.name}}</span>
         </ng-container>
         
         <ng-template #skeleton>
@@ -23,6 +24,7 @@
   
     <ion-item-options side="end">
       <ion-item-option
+        class="delete-button"
         color="danger"
         (click)="emitDelete(track)">
           Delete

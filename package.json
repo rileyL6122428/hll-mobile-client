@@ -10,7 +10,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "compile-ios": "ionic cordova build ios"
+    "compile-ios": "ionic cordova build ios",
+    "CI-check": "npx ng lint && npx ng test --watch false && npx ng build --prod -c production"
   },
   "private": true,
   "dependencies": {

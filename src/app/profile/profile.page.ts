@@ -3,7 +3,6 @@ import { TrackHttpClient } from 'hll-shared-client';
 import { Track } from '../shared/components/track-list/track.model';
 import { AlertController } from '@ionic/angular';
 import { zip, timer } from 'rxjs';
-import { AuthService } from '../shared/auth/auth.service';
 import { environment } from 'src/environments/environment';
 
 @Component({

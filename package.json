@@ -9,7 +9,9 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "compile-ios": "ionic cordova build ios",
+    "CI-check": "npx ng lint && npx ng test --watch false && npx ng build --prod -c production"
   },
   "private": true,
   "dependencies": {
@@ -26,7 +28,7 @@
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^4.7.1",
     "@ionic/storage": "^2.2.0",
-    "cordova-ios": "^4.5.5",
+    "cordova-ios": "^5.0.1",
     "cordova-plugin-customurlscheme": "git+https://github.com/EddyVerbruggen/LaunchMyApp-PhoneGap-Plugin.git",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
@@ -37,6 +39,7 @@
     "cordova-plugin-whitelist": "^1.3.3",
     "cordova-sqlite-storage": "^3.4.0",
     "core-js": "^2.5.4",
+    "hll-shared-client": "^1.0.0",
     "ng-mocks": "^8.1.0",
     "rxjs": "~6.5.1",
     "tslib": "^1.9.0",
@@ -57,6 +60,7 @@
     "@types/node": "~8.9.4",
     "codelyzer": "^5.0.0",
     "jasmine-core": "~3.4.0",
+    "jasmine-marbles": "^0.6.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.1.0",
     "karma-chrome-launcher": "~2.2.0",
@@ -64,6 +68,7 @@
     "karma-jasmine": "~2.0.1",
     "karma-jasmine-html-reporter": "^1.4.0",
     "protractor": "~5.4.0",
+    "rxjs-marbles": "^5.0.3",
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
     "typescript": "~3.4.3"

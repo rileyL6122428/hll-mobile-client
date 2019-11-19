@@ -10,18 +10,21 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { SharedServicesModule } from './shared/shared-services.module';
 import { SafariViewController } from '@ionic-native/safari-view-controller/ngx';
-
 import { AppConfigModule } from './app-config.module';
+import { HllApiModule } from 'hll-shared-client';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent
+  ],
   entryComponents: [],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
     SharedServicesModule,
-    AppConfigModule
+    AppConfigModule,
+    HllApiModule
   ],
   providers: [
     StatusBar,

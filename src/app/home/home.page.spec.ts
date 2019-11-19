@@ -6,6 +6,7 @@ import { AppLogoComponent } from '../shared/app-logo/app-logo.component';
 import { AuthService } from '../shared/auth/auth.service';
 import { Router } from '@angular/router';
 import { Observable, Observer } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 describe('HomePage', () => {
   let component: HomePage;
@@ -14,6 +15,8 @@ describe('HomePage', () => {
   let router: any;
 
   beforeEach(async(() => {
+    environment.skipAuth = false;
+
     TestBed.configureTestingModule({
       imports: [IonicModule.forRoot()],
       declarations: [

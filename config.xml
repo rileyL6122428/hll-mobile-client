@@ -113,5 +113,4 @@
         <variable name="ANDROID_HOST" value="dev-kfaat8-8.auth0.com" />
         <variable name="ANDROID_PATHPREFIX" value="/cordova/io.ionic.starter/callback" />
     </plugin>
-    <engine name="ios" spec="^4.5.5" />
 </widget>

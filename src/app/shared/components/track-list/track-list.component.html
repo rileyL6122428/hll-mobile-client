@@ -24,12 +24,18 @@
         <ng-container *ngIf="track; else skeleton">
           <span class="track-name">{{track.name}}</span>
           <ion-progress-bar
-            *ngIf="track === playingTrack"
+            *ngIf="track === selectedTrack"
             value="0.5"
             buffer=".65"
-            color="secondary"
+            [color]="track === playingTrack ? 'secondary' : 'light'"
             type="determinate">
           </ion-progress-bar>
+          <audio
+            #audioPlayer
+            style="display: none"
+            src="http://192.168.1.70:8080/api/public/track/5db4b74cac43c20ce7defa79/stream"
+            controls>
+          </audio>
         </ng-container>
         
         <ng-template #skeleton>

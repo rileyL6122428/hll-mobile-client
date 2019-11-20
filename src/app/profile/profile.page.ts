@@ -13,7 +13,8 @@ import { environment } from 'src/environments/environment';
 export class ProfilePage implements OnInit {
 
   tracks: Track[];
-  playingTrack: Track;
+  private _playingTrack: Track;
+  selectedTrack: Track;
 
   constructor(
     private trackClient: TrackHttpClient,
@@ -59,6 +60,21 @@ export class ProfilePage implements OnInit {
       ]
     })
       .then((alert) => alert.present());
+  }
+
+  pauseTrack(): void {
+    this._playingTrack = undefined;
+  }
+
+  set playingTrack(track: Track) {
+    console.log('set playingTrack');
+    console.log(track);
+    this._playingTrack = track;
+    this.selectedTrack = track;
+  }
+
+  get playingTrack(): Track {
+    return this._playingTrack;
   }
 
 }

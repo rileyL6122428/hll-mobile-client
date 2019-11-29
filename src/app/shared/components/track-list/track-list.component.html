@@ -1,57 +1,66 @@
-<ion-item-group>
-  <ion-item-sliding *ngFor="let track of tracks">
-    <ion-item-options side="start">
-      <ng-container *ngIf="track !== playingTrack; else pauseButton">
-        <ion-item-option
-          class="play-button"
-          color="secondary"
-          (click)="emitPlay(track)">
-            Play
-        </ion-item-option>
-      </ng-container>
-      <ng-template #pauseButton>
-        <ion-item-option
-          class="pause-button"
-          color="secondary"
-          (click)="emitPause(track)">
-            Stop
-        </ion-item-option>
-      </ng-template>
-    </ion-item-options>
-  
-    <ion-item>
-      <ion-label>
-        <ng-container *ngIf="track; else skeleton">
-          <span class="track-name">{{track.name}}</span>
-          <ion-progress-bar
-            *ngIf="track === selectedTrack"
-            value="0.5"
-            buffer=".65"
-            [color]="track === playingTrack ? 'secondary' : 'light'"
-            type="determinate">
-          </ion-progress-bar>
-          <audio
-            #audioPlayer
-            style="display: none"
-            src="http://192.168.1.70:8080/api/public/track/5db4b74cac43c20ce7defa79/stream"
-            controls>
-          </audio>
+<!--
+    NEXT STEPS:
+      SIMPLIFY THIS COMPONENT, USE TEMPLATE VARS FOR ALL AUDIO INTERACTION
+
+      SEE IF THAT IS PERFORMANT ON THE PHONE APP, ELSE RESEARCH IONIC NATIVE
+-->
+
+<ion-item-group *ngIf="tracks">
+  <ng-container *ngIf="tracks[0]; else skeleton">
+    <ion-item-sliding *ngFor="let track of tracks">
+      <ion-item-options side="start">
+        <ng-container *ngIf="audio?.paused; else pauseButton">
+          <ion-item-option
+            class="play-button"
+            color="secondary"
+            (click)="emitPlay(track); audio?.play();">
+              Play
+          </ion-item-option>
         </ng-container>
-        
-        <ng-template #skeleton>
-          <ion-skeleton-text animated>
-          </ion-skeleton-text>
+        <ng-template #pauseButton>
+          <ion-item-option
+            class="pause-button"
+            color="secondary"
+            (click)="emitPause(track); audio?.pause();">
+              Stop
+          </ion-item-option>
         </ng-template>
+      </ion-item-options>
+    
+      <ion-item>
+        <ion-label>
+            <span #test class="track-name">{{track.name}}</span>
+            <ion-progress-bar
+              [value]="audio.buffered.length ? audio.currentTime / audio.duration : 0"
+              [buffer]="audio.buffered.length ? audio.buffered.end(0) / audio.duration : 0"
+              [color]="audio.paused ? 'light' : 'secondary'"
+              type="determinate">
+            </ion-progress-bar>
+            <audio
+              #audio
+              src="http://172.20.10.2:8080/api/public/track/5db4b74cac43c20ce7defa79/stream"
+              preload="none"
+              (timeupdate)="triggerChangeDetection()">
+            </audio>
+        </ion-label>
+      </ion-item>
+    
+      <ion-item-options side="end">
+        <ion-item-option
+          class="delete-button"
+          color="danger"
+          (click)="emitDelete(track)">
+            Delete
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ng-container>
+
+  <ng-template #skeleton>
+    <ion-item *ngFor="let nullTrack of tracks">
+      <ion-label>
+        <ion-skeleton-text animated></ion-skeleton-text>
       </ion-label>
     </ion-item>
-  
-    <ion-item-options side="end">
-      <ion-item-option
-        class="delete-button"
-        color="danger"
-        (click)="emitDelete(track)">
-          Delete
-      </ion-item-option>
-    </ion-item-options>
-  </ion-item-sliding>
+  </ng-template>
 </ion-item-group>

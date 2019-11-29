@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { AUTH_SERVICE_CONFIG_TOKEN, AuthServiceConfig } from './shared/auth/auth.service';
 import { TrackClientConfig, trackClientConfigToken } from 'hll-shared-client';
 
-const localIP = '192.168.1.70';
+const localIP = '172.20.10.2';
 
 const authServiceConfig: AuthServiceConfig = {
   authorizationUrl: `http://${localIP}:4200/#/home?mobile-login=true`

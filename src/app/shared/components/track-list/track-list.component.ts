@@ -2,9 +2,17 @@ import {
   Component,
   EventEmitter,
   Input,
-  Output
+  Output,
+  InjectionToken,
+  Inject
 } from '@angular/core';
 import { Track } from 'src/app/shared/components/track-list/track.model';
+
+export interface TrackListConfig {
+  streamEndpoint: (track: Track) => string;
+}
+
+export const trackListConfigToken = new InjectionToken<TrackListConfig>('trackListConfigToken');
 
 @Component({
   selector: 'hll-track-list',
@@ -19,7 +27,9 @@ export class TrackListComponent {
   @Output() pause: EventEmitter<Track>;
   @Output() delete: EventEmitter<Track>;
 
-  constructor() {
+  constructor(
+    @Inject(trackListConfigToken) private config: TrackListConfig,
+  ) {
     this.play = new EventEmitter();
     this.pause = new EventEmitter();
     this.delete = new EventEmitter();
@@ -41,6 +51,10 @@ export class TrackListComponent {
     if (track) {
       this.delete.emit(track);
     }
+  }
+
+  streamEndpoint(track: Track): string {
+    return track ? this.config.streamEndpoint(track) : '';
   }
 
   triggerChangeDetection(): void {

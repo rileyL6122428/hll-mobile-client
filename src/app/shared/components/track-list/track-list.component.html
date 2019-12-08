@@ -1,10 +1,3 @@
-<!--
-    NEXT STEPS:
-      SIMPLIFY THIS COMPONENT, USE TEMPLATE VARS FOR ALL AUDIO INTERACTION
-
-      SEE IF THAT IS PERFORMANT ON THE PHONE APP, ELSE RESEARCH IONIC NATIVE
--->
-
 <ion-item-group *ngIf="tracks">
   <ng-container *ngIf="tracks[0]; else skeleton">
     <ion-item-sliding *ngFor="let track of tracks">
@@ -29,16 +22,17 @@
     
       <ion-item>
         <ion-label>
-            <span #test class="track-name">{{track.name}}</span>
+            <span class="track-name">
+              <p>{{track.name}}</p>
+            </span>
             <ion-progress-bar
-              [value]="audio.buffered.length ? audio.currentTime / audio.duration : 0"
-              [buffer]="audio.buffered.length ? audio.buffered.end(0) / audio.duration : 0"
+              [value]="audio.currentTime / track.duration"
               [color]="audio.paused ? 'light' : 'secondary'"
               type="determinate">
             </ion-progress-bar>
             <audio
               #audio
-              src="http://172.20.10.2:8080/api/public/track/5db4b74cac43c20ce7defa79/stream"
+              src="{{streamEndpoint(track)}}"
               preload="none"
               (timeupdate)="triggerChangeDetection()">
             </audio>

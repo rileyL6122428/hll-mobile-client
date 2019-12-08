@@ -11,6 +11,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "compile-ios": "ionic cordova build ios",
+    "emulate-ios": "ionic cordova emulate ios --livereload",
     "CI-check": "npx ng lint && npx ng test --watch false && npx ng build --prod -c production"
   },
   "private": true,

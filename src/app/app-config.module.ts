@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { AUTH_SERVICE_CONFIG_TOKEN, AuthServiceConfig } from './shared/auth/auth.service';
 import { TrackClientConfig, trackClientConfigToken } from 'hll-shared-client';
+import { TrackListConfig, trackListConfigToken } from './shared/components/track-list/track-list.component';
+import { Track } from './shared/components/track-list/track.model';
 
 const localIP = '192.168.1.70';
 
@@ -16,6 +18,10 @@ const trackClientConfig: TrackClientConfig = {
   }
 };
 
+const trackListConfig: TrackListConfig = {
+  streamEndpoint: (track: Track) => `http://${localIP}:8080/api/public/track/${track.id}/stream`
+};
+
 @NgModule({
   providers: [
     {
@@ -25,6 +31,10 @@ const trackClientConfig: TrackClientConfig = {
     {
       provide: trackClientConfigToken,
       useValue: trackClientConfig
+    },
+    {
+      provide: trackListConfigToken,
+      useValue: trackListConfig
     }
   ]
 })

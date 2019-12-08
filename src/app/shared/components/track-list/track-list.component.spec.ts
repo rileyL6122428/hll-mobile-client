@@ -1,16 +1,25 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { TrackListComponent } from './track-list.component';
+import { TrackListComponent, trackListConfigToken, TrackListConfig } from './track-list.component';
 import { Track } from './track.model';
 
 describe('TrackListComponent', () => {
+
   let component: TrackListComponent;
   let fixture: ComponentFixture<TrackListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ TrackListComponent ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      providers: [
+        {
+          provide: trackListConfigToken,
+          useValue: {
+            streamEndpoint: (track: Track) => `EXAMPLE_STREAM_ENDPOINT/${track.id}`
+          } as TrackListConfig
+        }
+      ]
     })
     .compileComponents();
   }));
@@ -38,43 +47,9 @@ describe('TrackListComponent', () => {
       const contentElements = fixture
         .debugElement
         .nativeElement
-        .querySelectorAll('ion-item-sliding ion-item ion-skeleton-text');
+        .querySelectorAll('ion-item ion-skeleton-text');
 
       expect(contentElements.length).toBe(3);
-    });
-
-    it('does not emit a play event when play button is clicked', () => {
-      const emitPlaySpy = spyOn(component.play, 'next');
-
-      const playButtons = fixture
-        .debugElement
-        .nativeElement
-        .querySelectorAll('.play-button');
-
-      Array
-        .from(playButtons)
-        .forEach((playButtonElement: HTMLElement) => {
-          playButtonElement.click();
-          fixture.detectChanges();
-        });
-      expect(emitPlaySpy).not.toHaveBeenCalled();
-    });
-
-    it('does not emit a delete event when delete button is clicked', () => {
-      const emitDeleteSpy = spyOn(component.delete, 'next');
-
-      const deleteButtons = fixture
-        .debugElement
-        .nativeElement
-        .querySelectorAll('.delete-button');
-
-      Array
-        .from(deleteButtons)
-        .forEach((deleteButtonElement: HTMLElement) => {
-          deleteButtonElement.click();
-          fixture.detectChanges();
-        });
-      expect(emitDeleteSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -131,6 +106,74 @@ describe('TrackListComponent', () => {
       fixture.detectChanges();
     });
 
+    it('tells the audio element to play when play button is clicked', () => {
+      const audioElements = fixture
+        .debugElement
+        .nativeElement
+        .querySelectorAll('audio');
+      const secondAudioElement = audioElements[1];
+      spyOn(secondAudioElement, 'play');
+
+      const playButtons = fixture
+        .debugElement
+        .nativeElement
+        .querySelectorAll('.play-button');
+
+      const secondPlayButton = playButtons[1];
+      secondPlayButton.click();
+      fixture.detectChanges();
+
+      expect(secondAudioElement.play).toHaveBeenCalled();
+    });
+
+    it('emits a pause event when pause button is clicked', (done) => {
+      component.pause.subscribe((emittedTrack: Track) => {
+        const secondTrack = tracks[1];
+        expect(emittedTrack).toBe(secondTrack);
+        done();
+      });
+
+      const secondAudioElement = fixture
+        .debugElement
+        .nativeElement
+        .querySelectorAll('audio')[1];
+      spyOnProperty(secondAudioElement, 'paused', 'get').and.returnValue(false);
+      fixture.detectChanges();
+
+      const pauseButtons = fixture
+        .debugElement
+        .nativeElement
+        .querySelectorAll('.pause-button');
+
+      const secondPauseButton = pauseButtons[0];
+      secondPauseButton.click();
+      fixture.detectChanges();
+    });
+
+    it('tells the audio element to pause when pause button is clicked', () => {
+      const audioElements = fixture
+        .debugElement
+        .nativeElement
+        .querySelectorAll('audio');
+
+      const secondAudioElement = audioElements[1];
+      spyOnProperty(secondAudioElement, 'paused', 'get').and.returnValue(false);
+      spyOn(secondAudioElement, 'pause');
+
+      fixture.detectChanges();
+
+      const pauseButtons = fixture
+        .debugElement
+        .nativeElement
+        .querySelectorAll('.pause-button');
+
+      const secondPauseButton = pauseButtons[0];
+      secondPauseButton.click();
+      fixture.detectChanges();
+
+      expect(secondAudioElement.pause).toHaveBeenCalled();
+    });
+
     it('emits a delete event when delete button is clicked', (done) => {
       component.delete.subscribe((emittedTrack: Track) => {
         const firstTrack = tracks[0];
@@ -146,6 +189,17 @@ describe('TrackListComponent', () => {
       const firstPlayButton = playButtons[0];
       firstPlayButton.click();
       fixture.detectChanges();
+    });
+
+    it('adds audio elements with the correct src values', () => {
+      const audioElements = fixture
+        .debugElement
+        .nativeElement
+        .querySelectorAll('audio');
+
+      expect(audioElements.length).toEqual(2);
+      expect(audioElements[0].src).toContain('EXAMPLE_STREAM_ENDPOINT/EXAMPLE_ID_1');
+      expect(audioElements[1].src).toContain('EXAMPLE_STREAM_ENDPOINT/EXAMPLE_ID_2');
     });
   });
 });

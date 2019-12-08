@@ -35,10 +35,6 @@ export class ProfilePage implements OnInit {
       });
   }
 
-  play(track: Track): void {
-    console.log(`USER REQUESTED TO PLAY TRACK: ${track.name}`);
-  }
-
   confirmDeleteTrack(track: Track): void {
     this.alertController.create({
       header: `Are you sure you want to delete ${track.name}?`,

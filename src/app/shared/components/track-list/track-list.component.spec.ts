@@ -201,5 +201,19 @@ describe('TrackListComponent', () => {
       expect(audioElements[0].src).toContain('EXAMPLE_STREAM_ENDPOINT/EXAMPLE_ID_1');
       expect(audioElements[1].src).toContain('EXAMPLE_STREAM_ENDPOINT/EXAMPLE_ID_2');
     });
+
+    it('reloads audio element after completing a playthrough', () => {
+      const audioElements = fixture
+        .debugElement
+        .nativeElement
+        .querySelectorAll('audio');
+      const secondAudioElement = audioElements[1] as HTMLAudioElement;
+      spyOn(secondAudioElement, 'load');
+
+      secondAudioElement.dispatchEvent(new Event('ended'));
+      fixture.detectChanges();
+
+      expect(secondAudioElement.load).toHaveBeenCalled();
+    });
   });
 });

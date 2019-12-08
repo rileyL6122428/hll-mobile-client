@@ -34,7 +34,8 @@
               #audio
               src="{{streamEndpoint(track)}}"
               preload="none"
-              (timeupdate)="triggerChangeDetection()">
+              (timeupdate)="triggerChangeDetection()"
+              (ended)="audio.load();">
             </audio>
         </ion-label>
       </ion-item>

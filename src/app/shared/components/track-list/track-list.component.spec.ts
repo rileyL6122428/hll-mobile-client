@@ -191,7 +191,7 @@ describe('TrackListComponent', () => {
       fixture.detectChanges();
     });
 
-    it('adds audio element with the correct src value', () => {
+    it('adds audio elements with the correct src values', () => {
       const audioElements = fixture
         .debugElement
         .nativeElement

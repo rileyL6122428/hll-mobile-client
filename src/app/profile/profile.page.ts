@@ -13,7 +13,6 @@ import { environment } from 'src/environments/environment';
 export class ProfilePage implements OnInit {
 
   tracks: Track[];
-  selectedTrack: Track;
 
   constructor(
     private trackClient: TrackHttpClient,

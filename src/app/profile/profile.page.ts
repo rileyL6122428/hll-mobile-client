@@ -1,14 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { TrackHttpClient } from 'hll-shared-client';
 import { Track } from '../shared/components/track-list/track.model';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ActionSheetController } from '@ionic/angular';
 import { zip, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { DocumentPicker } from '@ionic-native/document-picker/ngx';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'hll-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
+  providers: [
+    DocumentPicker
+  ]
 })
 export class ProfilePage implements OnInit {
 
@@ -16,7 +21,10 @@ export class ProfilePage implements OnInit {
 
   constructor(
     private trackClient: TrackHttpClient,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private docPicker: DocumentPicker,
+    private actionSheetController: ActionSheetController,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -58,6 +66,35 @@ export class ProfilePage implements OnInit {
       ]
     })
       .then((alert) => alert.present());
+  }
+
+  async presentActionsList() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Actions',
+      buttons: [
+        {
+          text: 'Create new track',
+          handler: () => {
+            this.router.navigate(['/new-track']);
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('CANCEL CLICKED');
+          }
+        }
+      ]
+    });
+
+    await actionSheet.present();
+  }
+
+  pickFile(): void {
+    this.docPicker.getFile('all')
+      .then(uri => console.log('uri', uri))
+      .catch(reason => console.log('reason', reason));
   }
 
 }

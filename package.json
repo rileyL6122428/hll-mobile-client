@@ -11,7 +11,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "compile-ios": "ionic cordova build ios",
-    "emulate-ios": "ionic cordova emulate ios --livereload",
+    "emulate-ios-on-emulator": "ionic cordova emulate ios --livereload",
+    "emulate-ios-on-device": "ionic cordova emulate ios --livereload --address 192.168.1.70",
     "CI-check": "npx ng lint && npx ng test --watch false && npx ng build --prod -c production"
   },
   "private": true,

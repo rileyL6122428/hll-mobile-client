@@ -11,18 +11,26 @@
 <ion-content>
   <ion-item id="track-name-container">
     <ion-label position="floating">Track Name</ion-label>
-    <ion-input type="text"></ion-input>
+    <ion-input [(ngModel)]="trackName" type="text"></ion-input>
   </ion-item>
 
   <ion-item id="track-contents-container">
-    <input name="track-contents" id="track-contents" type="file">
+    <input
+      name="track-contents"
+      id="track-contents"
+      type="file"
+      (change)="onFileChange($event.target.files[0])">
   </ion-item>
 
 </ion-content>
 
 <ion-footer>
   <ion-toolbar>
-    <ion-button id="submit-button" expand="full" color="primary">
+    <ion-button
+      id="submit-button"
+      expand="full"
+      color="primary"
+      (click)="submit()">
       Submit
     </ion-button>
   </ion-toolbar>

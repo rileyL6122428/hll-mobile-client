@@ -1,28 +1,64 @@
-import { Component, OnInit } from '@angular/core';
-import { DocumentPicker } from '@ionic-native/document-picker/ngx';
+import { Component } from '@angular/core';
+import { TrackHttpClient } from 'hll-shared-client';
+import { Router } from '@angular/router';
+import { AuthService } from '../shared/auth/auth.service';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'hll-new-track',
   templateUrl: './new-track.page.html',
   styleUrls: ['./new-track.page.scss'],
 })
-export class NewTrackPage implements OnInit {
+export class NewTrackPage {
+
+  trackName = '';
+  uploading = false;
+  private trackContents: File;
 
   constructor(
-    private docPicker: DocumentPicker
+    private trackClient: TrackHttpClient,
+    private router: Router,
+    private auth: AuthService,
+    private loadingController: LoadingController
   ) { }
 
-  ngOnInit() {
+  submit(): void {
+    this.uploading = true;
+
+    this.loadingController.create({
+      message: 'Please wait.',
+      spinner: 'bubbles'
+    })
+      .then((loadingElement) => loadingElement.present());
+
+    this.trackClient.upload({
+      name: this.trackName,
+      contents: this.trackContents,
+      bearerToken: this.auth.idToken
+    })
+      .subscribe(
+        () => {
+          console.log('SUCCESS!');
+          this.router.navigate(['/create-track-confirmation', { successful: true }]);
+        },
+        (error) => {
+          console.log('ERROR!', error);
+          this.router.navigate(['/create-track-confirmation', { successful: false }]);
+        },
+        () => {
+          this.loadingController.dismiss();
+          this.uploading = false;
+          this.trackName = '';
+          this.uploading = false;
+        }
+      );
   }
 
-  test(): void {
-    console.log('INPUT CLICKED!!!');
-  }
-
-  pickFile(): void {
-    this.docPicker.getFile('all')
-      .then(uri => console.log('uri', uri))
-      .catch(reason => console.log('reason', reason));
+  onFileChange(file: File): void {
+    if (file) {
+      console.log('file.name', file.name);
+      this.trackContents = file;
+    }
   }
 
 }

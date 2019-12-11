@@ -6,6 +6,10 @@ const routes: Routes = [
   { path: 'home', loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)},
   { path: 'profile', loadChildren: './profile/profile.module#ProfilePageModule' },
   { path: 'new-track', loadChildren: './new-track/new-track.module#NewTrackPageModule' },
+  { path:
+    'create-track-confirmation',
+    loadChildren: './create-track-confirmation/create-track-confirmation.module#CreateTrackConfirmationPageModule'
+  },
 ];
 
 @NgModule({

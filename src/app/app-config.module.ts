@@ -12,8 +12,7 @@ const authServiceConfig: AuthServiceConfig = {
 
 const trackClientConfig: TrackClientConfig = {
   urls: {
-    // upload: `http://${localIP}:8080/api/private/track`,
-    upload: `http://${localIP}:8080/api/public/track`,
+    upload: `http://${localIP}:8080/api/private/track`,
     getAllForUser: `http://${localIP}:8080/api/public/tracks`,
     delete: (trackId: string) => `http://${localIP}:8080/api/private/track/${trackId}`
   }

@@ -1,7 +1,10 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button
+        color="dark"
+        text="Tracks">
+      </ion-back-button>
     </ion-buttons>
 
     <ion-title>Create Track</ion-title>
@@ -16,6 +19,7 @@
 
   <ion-item id="track-contents-container">
     <input
+      #trackContentsInput
       name="track-contents"
       id="track-contents"
       type="file"
@@ -28,7 +32,7 @@
   <ion-button
     id="submit-button"
     expand="full"
-    color="primary"
+    color="dark"
     (click)="submit()">
     Submit
   </ion-button>

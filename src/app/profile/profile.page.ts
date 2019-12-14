@@ -4,16 +4,12 @@ import { Track } from '../shared/components/track-list/track.model';
 import { AlertController, ActionSheetController } from '@ionic/angular';
 import { zip, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { DocumentPicker } from '@ionic-native/document-picker/ngx';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'hll-profile',
   templateUrl: './profile.page.html',
-  styleUrls: ['./profile.page.scss'],
-  providers: [
-    DocumentPicker
-  ]
+  styleUrls: ['./profile.page.scss']
 })
 export class ProfilePage implements OnInit {
 
@@ -22,39 +18,12 @@ export class ProfilePage implements OnInit {
   constructor(
     private trackClient: TrackHttpClient,
     private alertController: AlertController,
-    private docPicker: DocumentPicker,
     private actionSheetController: ActionSheetController,
     private router: Router
   ) { }
 
   ngOnInit() {
     this.fetchUserTracks();
-
-    console.log('this.router.getCurrentNavigation().extras.state');
-    console.log(this.router.getCurrentNavigation().extras.state);
-
-    if (
-      this.router.getCurrentNavigation().extras.state &&
-      this.router.getCurrentNavigation().extras.state.trackUploadSuccessful
-    ) {
-      console.log('UPLOAD SUCCESSFUL');
-    }
-  }
-
-  ionViewWillEnter(): void {
-    // console.log('this.router.getCurrentNavigation().extras.state');
-    // console.log(
-    //   this.router.getCurrentNavigation() && this.router.getCurrentNavigation().extras
-    // );
-
-    // if (
-    //   this.router.getCurrentNavigation() &&
-    //   this.router.getCurrentNavigation().extras &&
-    //   this.router.getCurrentNavigation().extras.state &&
-    //   this.router.getCurrentNavigation().extras.state.trackUploadSuccessful
-    // ) {
-    //   console.log('UPLOAD SUCCESSFUL');
-    // }
   }
 
   private fetchUserTracks(): void {
@@ -101,6 +70,7 @@ export class ProfilePage implements OnInit {
   async presentActionsList() {
     const actionSheet = await this.actionSheetController.create({
       header: 'Actions',
+      cssClass: 'track-actions',
       buttons: [
         {
           text: 'Create new track',
@@ -119,12 +89,6 @@ export class ProfilePage implements OnInit {
     });
 
     await actionSheet.present();
-  }
-
-  pickFile(): void {
-    this.docPicker.getFile('all')
-      .then(uri => console.log('uri', uri))
-      .catch(reason => console.log('reason', reason));
   }
 
 }

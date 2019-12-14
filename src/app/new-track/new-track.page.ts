@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { TrackHttpClient } from 'hll-shared-client';
 import { Router } from '@angular/router';
 import { AuthService } from '../shared/auth/auth.service';
 import { LoadingController, ToastController, AlertController } from '@ionic/angular';
+import { of } from 'rxjs';
+import { catchError, delay, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'hll-new-track',
@@ -11,9 +13,11 @@ import { LoadingController, ToastController, AlertController } from '@ionic/angu
 })
 export class NewTrackPage {
 
-  trackName = '';
-  uploading = false;
+  trackName: string;
   private trackContents: File;
+
+  @ViewChild('trackContentsInput', { static: true })
+  private trackContentsInputVC: { nativeElement: HTMLInputElement };
 
   constructor(
     private trackClient: TrackHttpClient,
@@ -24,22 +28,43 @@ export class NewTrackPage {
     private alertController: AlertController
   ) { }
 
-  submit(): void {
-    this.uploading = true;
+  ionViewWillEnter(): void {
+    this.trackName = '';
+    this.trackContentsInputVC.nativeElement.value = null;
+  }
 
+  submit(): void {
     this.loadingController.create({
       message: 'Please wait.',
       spinner: 'bubbles'
     })
-      .then((loadingElement) => loadingElement.present());
+      .then((loader) => {
+        loader.present();
+        this.uploadTrack();
+      });
+  }
 
+  private uploadTrack(): void {
     this.trackClient.upload({
       name: this.trackName,
       contents: this.trackContents,
       bearerToken: this.auth.idToken
     })
+
+      .pipe(
+        catchError((error) => of({ errorOccurred: true, error })),
+        delay(1000),
+        tap((piped) => {
+          if (piped.errorOccurred) {
+            throw piped.error;
+          }
+        })
+      )
+
       .subscribe(
         () => {
+          this.loadingController.dismiss();
+
           this.toastController.create({
             message: `${this.trackName} was created`,
             duration: 3000,
@@ -48,10 +73,13 @@ export class NewTrackPage {
           })
             .then((toast) => {
               toast.present();
-              this.router.navigate(['/profile']);
+              this.router.navigate(['/profile'])
             });
         },
+
         () => {
+          this.loadingController.dismiss();
+
           this.alertController.create({
             header: 'An error occurred.',
             message: `We're sorry, we were unable to upload your track. Please try again at a later time.`,
@@ -63,12 +91,7 @@ export class NewTrackPage {
               }
             ]
           })
-            .then((alert) => alert.present())
-        },
-        () => {
-          this.uploading = false;
-          this.trackName = '';
-          this.uploading = false;
+            .then((alert) => alert.present());
         }
       );
   }
@@ -78,5 +101,4 @@ export class NewTrackPage {
       this.trackContents = file;
     }
   }
-
 }

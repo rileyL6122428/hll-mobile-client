@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { TrackHttpClient } from 'hll-shared-client';
-import { Router, NavigationExtras } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../shared/auth/auth.service';
-import { LoadingController } from '@ionic/angular';
-import { of } from 'rxjs';
+import { LoadingController, ToastController, AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'hll-new-track',
@@ -20,43 +19,53 @@ export class NewTrackPage {
     private trackClient: TrackHttpClient,
     private router: Router,
     private auth: AuthService,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private toastController: ToastController,
+    private alertController: AlertController
   ) { }
 
   submit(): void {
     this.uploading = true;
 
-    // this.loadingController.create({
-    //   message: 'Please wait.',
-    //   spinner: 'bubbles'
-    // })
-    //   .then((loadingElement) => loadingElement.present());
+    this.loadingController.create({
+      message: 'Please wait.',
+      spinner: 'bubbles'
+    })
+      .then((loadingElement) => loadingElement.present());
 
-    // this.trackClient.upload({
-    //   name: this.trackName,
-    //   contents: this.trackContents,
-    //   bearerToken: this.auth.idToken
-    // })
-    of(true)
+    this.trackClient.upload({
+      name: this.trackName,
+      contents: this.trackContents,
+      bearerToken: this.auth.idToken
+    })
       .subscribe(
         () => {
-          console.log('SUCCESS!');
-          // this.router.navigate(['/create-track-confirmation', { successful: true }]);
-          const navExtras: NavigationExtras = {
-            state: { successful: true }
-          };
-          this.router.navigate(['/create-track-confirmation'], navExtras);
-        },
-        (error) => {
-          console.log('ERROR!', error);
-
-          const navExtras: NavigationExtras = {
-            state: { successful: false }
-          };
-          this.router.navigate(['/create-track-confirmation'], navExtras);
+          this.toastController.create({
+            message: `${this.trackName} was created`,
+            duration: 3000,
+            color: 'dark',
+            cssClass: 'center-text'
+          })
+            .then((toast) => {
+              toast.present();
+              this.router.navigate(['/profile']);
+            });
         },
         () => {
-          // this.loadingController.dismiss();
+          this.alertController.create({
+            header: 'An error occurred.',
+            message: `We're sorry, we were unable to upload your track. Please try again at a later time.`,
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => this.router.navigate(['/profile'])
+              }
+            ]
+          })
+            .then((alert) => alert.present())
+        },
+        () => {
           this.uploading = false;
           this.trackName = '';
           this.uploading = false;
@@ -66,7 +75,6 @@ export class NewTrackPage {
 
   onFileChange(file: File): void {
     if (file) {
-      console.log('file.name', file.name);
       this.trackContents = file;
     }
   }

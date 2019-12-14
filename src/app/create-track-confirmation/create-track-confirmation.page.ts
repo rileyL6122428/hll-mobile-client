@@ -16,7 +16,8 @@ export class CreateTrackConfirmationPage implements OnInit {
   ngOnInit() {
     console.log('sup');
     console.log(this.router);
-    console.log(this.router.getCurrentNavigation().extras);
+    console.log('this.router.getCurrentNavigation().extras.state.successful');
+    console.log(this.router.getCurrentNavigation().extras.state.successful);
   }
 
 }

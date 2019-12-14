@@ -28,6 +28,36 @@ export class ProfilePage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.fetchUserTracks();
+
+    console.log('this.router.getCurrentNavigation().extras.state');
+    console.log(this.router.getCurrentNavigation().extras.state);
+
+    if (
+      this.router.getCurrentNavigation().extras.state &&
+      this.router.getCurrentNavigation().extras.state.trackUploadSuccessful
+    ) {
+      console.log('UPLOAD SUCCESSFUL');
+    }
+  }
+
+  ionViewWillEnter(): void {
+    // console.log('this.router.getCurrentNavigation().extras.state');
+    // console.log(
+    //   this.router.getCurrentNavigation() && this.router.getCurrentNavigation().extras
+    // );
+
+    // if (
+    //   this.router.getCurrentNavigation() &&
+    //   this.router.getCurrentNavigation().extras &&
+    //   this.router.getCurrentNavigation().extras.state &&
+    //   this.router.getCurrentNavigation().extras.state.trackUploadSuccessful
+    // ) {
+    //   console.log('UPLOAD SUCCESSFUL');
+    // }
+  }
+
+  private fetchUserTracks(): void {
     const skeletonTracks = [null, null, null, null, null];
     this.tracks = skeletonTracks;
 

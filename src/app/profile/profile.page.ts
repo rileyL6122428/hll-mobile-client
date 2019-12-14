@@ -5,6 +5,7 @@ import { AlertController, ActionSheetController } from '@ionic/angular';
 import { zip, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { AuthService } from '../shared/auth/auth.service';
 
 @Component({
   selector: 'hll-profile',
@@ -19,10 +20,15 @@ export class ProfilePage implements OnInit {
     private trackClient: TrackHttpClient,
     private alertController: AlertController,
     private actionSheetController: ActionSheetController,
-    private router: Router
+    private router: Router,
+    private auth: AuthService
   ) { }
 
   ngOnInit() {
+    // this.fetchUserTracks();
+  }
+
+  ionViewWillEnter(): void {
     this.fetchUserTracks();
   }
 
@@ -60,6 +66,10 @@ export class ProfilePage implements OnInit {
           cssClass: 'danger ion-color-danger',
           handler: () => {
             console.log('DELETE TRACK CONFIRMED');
+            this.trackClient.delete({
+              track,
+              bearerToken: this.auth.idToken
+            })
           }
         }
       ]

@@ -64,21 +64,19 @@ export class NewTrackPage {
     const minDelay$ = timer(environment.minUploadTrackDelay);
 
     zip(upload$, minDelay$)
-      .subscribe(
-        ([upload]) => {
-          this.loadingController.dismiss();
+      .subscribe(([upload]) => {
+        this.loadingController.dismiss();
 
-          if (!upload.errorOccurred) {
-            this.showSuccessToast({
-              then: () => this.router.navigate(['/profile'])
-            });
-          } else {
-            this.showFailureAlert({
-              onClose: () => this.router.navigate(['/profile'])
-            });
-          }
+        if (!upload.errorOccurred) {
+          this.showSuccessToast({
+            then: () => this.router.navigate(['/profile'])
+          });
+        } else {
+          this.showFailureAlert({
+            onClose: () => this.router.navigate(['/profile'])
+          });
         }
-      );
+      });
   }
 
   private showSuccessToast(params: { then: () => void }): void {

@@ -2,15 +2,62 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NewTrackPage } from './new-track.page';
+import { LoadingController, ToastController, AlertController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { AuthService } from '../shared/auth/auth.service';
+import { TrackHttpClient } from 'hll-shared-client';
+import { Observer, Observable } from 'rxjs';
 
 describe('NewTrackPage', () => {
   let component: NewTrackPage;
   let fixture: ComponentFixture<NewTrackPage>;
 
+  let loadingController: { create: jasmine.Spy }
+  let loader: { present: jasmine.Spy };
+
+  let toastController: { create: jasmine.Spy };
+  let toast: { present: jasmine.Spy };
+
+  let alertController: { create: jasmine.Spy };
+  let mobileAlert: { present: jasmine.Spy };
+
+  let router: { navigate: jasmine.Spy };
+
+  let auth: { idToken: string };
+
+  let trackClient: { upload: jasmine.Spy };
+  let uploadObserver: Observer<any>;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ NewTrackPage ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        {
+          provide: LoadingController,
+          useFactory: _stubLoadingController
+        },
+        {
+          provide: Router,
+          useFactory: _stubRouter
+        },
+        {
+          provide: AuthService,
+          useFactory: _stubAuthService
+        },
+        {
+          provide: ToastController,
+          useFactory: _stubToastController
+        },
+        {
+          provide: AlertController,
+          useFactory: _stubAlertController
+        },
+        {
+          provide: TrackHttpClient,
+          useFactory: _stubTrackHttpClient
+        }
+      ]
     })
     .compileComponents();
   }));
@@ -24,4 +71,107 @@ describe('NewTrackPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  describe('submit', () => {
+    let trackName: string;
+    let trackContents: File;
+
+    beforeEach(() => {
+      trackName = 'EXAMPLE_TRACK_NAME';
+      _getTrackNameInput().value = trackName;
+      _getTrackNameInput().dispatchEvent(new Event('input'));
+
+      trackContents = new File([], 'EXAMPLE_LOCAL_FILE_NAME');
+      component.onFileChange(trackContents);
+
+      _getSubmitButton().click();
+
+      fixture.detectChanges();
+    });
+
+    xit('blocks the screen with a loader', () => {
+
+    });
+  });
+
+  function _stubLoadingController(): any {
+    loadingController = jasmine.createSpyObj('loadingController', [
+      'create'
+    ]);
+
+    loader = jasmine.createSpyObj('loader', [
+      'present'
+    ]);
+
+    loadingController.create.and.returnValue(new Promise((resolve) => {
+      resolve(loader);
+    }));
+
+    return loadingController;
+  }
+
+  function _stubRouter(): any {
+    router = jasmine.createSpyObj('router', [
+      'navigate'
+    ]);
+
+    return router;
+  }
+
+  function _stubAuthService(): any {
+    auth = { idToken: 'EXAMPLE_ID_TOKEN' };
+    return auth;
+  }
+
+  function _stubToastController(): any {
+    toastController = jasmine.createSpyObj('toastController', [
+      'create'
+    ]);
+
+    toast = jasmine.createSpyObj('toast', [
+      'present'
+    ]);
+
+    toastController.create.and.returnValue(new Promise((resolve) => {
+      resolve(toast);
+    }));
+
+    return toastController;
+  }
+
+  function _stubAlertController(): any {
+    alertController = jasmine.createSpyObj('AlertController', [
+      'create'
+    ]);
+
+    mobileAlert = jasmine.createSpyObj('mobileAlert', [
+      'present'
+    ]);
+
+    alertController.create.and.returnValue(mobileAlert);
+
+    return alertController;
+  }
+
+  function _stubTrackHttpClient(): any {
+    trackClient = jasmine.createSpyObj('TrackClient', [
+      'upload'
+    ]);
+
+    trackClient.upload.and.returnValue(new Observable(
+      (observer) => uploadObserver = observer
+    ));
+  }
+
+  function _getTrackNameInput(): HTMLInputElement {
+    return fixture
+      .nativeElement
+      .querySelector('input[type="text"]');
+  }
+
+  function _getSubmitButton(): HTMLButtonElement {
+    return fixture
+      .nativeElement
+      .querySelector('#submit-button');
+  }
 });

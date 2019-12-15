@@ -34,24 +34,13 @@ export class NewTrackPage {
     this.trackContentsInputVC.nativeElement.value = null;
   }
 
-  submit(): void {
-      this.showLoader({
-        then: () => this.uploadTrack()
-      });
-  }
-
-  private showLoader(params: { then: () => void }) {
-    this.loadingController.create({
+  async submit() {
+    const loader = await this.loadingController.create({
       message: 'Please wait.',
       spinner: 'bubbles'
-    })
-      .then((loader) => {
-        loader.present();
-        params.then();
-      });
-  }
+    });
+    await loader.present();
 
-  private uploadTrack(): void {
     const upload$ = this.trackClient.upload({
       name: this.trackName,
       contents: this.trackContents,
@@ -95,7 +84,7 @@ export class NewTrackPage {
   private showFailureAlert(params: { onClose: () => void }): void {
     this.alertController.create({
       header: 'An error occurred.',
-      message: `We're sorry, we were unable to upload your track. Please try again at a later time.`,
+      message: `We're sorry, we were unable to upload your track. Please try again later.`,
       buttons: [
         {
           text: 'OK',

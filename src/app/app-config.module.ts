@@ -4,7 +4,7 @@ import { TrackClientConfig, trackClientConfigToken } from 'hll-shared-client';
 import { TrackListConfig, trackListConfigToken } from './shared/components/track-list/track-list.component';
 import { Track } from './shared/components/track-list/track.model';
 
-const localIP = '192.168.1.70';
+const localIP = '172.17.0.48';
 
 const authServiceConfig: AuthServiceConfig = {
   authorizationUrl: `http://${localIP}:4200/#/home?mobile-login=true`

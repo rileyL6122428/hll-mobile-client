@@ -76,6 +76,22 @@ describe('NewTrackPage', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('ionViewWillEnter', () => {
+
+    it('resets track form fields', () => {
+      component.trackName = 'EXAMPLE_TRACK_NAME';
+      fixture.detectChanges();
+
+      component.ionViewWillEnter();
+      fixture.detectChanges();
+
+      expect(component.trackName).toEqual('');
+    });
+
+    // NOT SURE HOW TO IMPLEMENT THIS SPEC
+    xit('resets track contents form field');
+  });
+
   describe('submit', () => {
     let trackName: string;
     let trackContents: File;
@@ -278,5 +294,11 @@ describe('NewTrackPage', () => {
     return fixture
       .nativeElement
       .querySelector('#submit-button');
+  }
+
+  function _getFileInput(): HTMLInputElement {
+    return fixture
+      .nativeElement
+      .querySelector('#track-contents');
   }
 });

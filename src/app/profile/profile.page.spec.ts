@@ -119,7 +119,7 @@ describe('ProfilePage', () => {
       });
     });
 
-    it('renders tracks in tracklist component when "fetch tracks" API call completes', (done) => {
+    it('renders tracks in TrackListComponent when "fetch tracks" API call completes', (done) => {
       getTracksObserver.next(fetchedTracks);
       fixture.detectChanges();
 

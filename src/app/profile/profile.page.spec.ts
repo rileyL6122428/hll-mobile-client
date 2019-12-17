@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ActionSheetController } from '@ionic/angular';
 import { TrackHttpClient } from 'hll-shared-client';
 import { MockComponent } from 'ng-mocks';
 import { Observable, Observer } from 'rxjs';
@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 import { TrackListComponent } from '../shared/components/track-list/track-list.component';
 import { Track } from '../shared/components/track-list/track.model';
 import { ProfilePage } from './profile.page';
+import { Router } from '@angular/router';
 
 describe('ProfilePage', () => {
   let component: ProfilePage;
@@ -21,8 +22,13 @@ describe('ProfilePage', () => {
     reject: (val: any) => void
   };
 
+  let actionSheetController: { create: jasmine.Spy };
+  let actionSheet: { present: jasmine.Spy };
+
   let trackClientMock: { getTracks: jasmine.Spy };
   let getTracksObserver: Observer<Track[]>;
+
+  let router: { navigate: jasmine.Spy };
 
   let fetchedTracks: Track[];
 
@@ -42,6 +48,14 @@ describe('ProfilePage', () => {
           provide: AlertController,
           useValue: jasmine.createSpyObj('AlertController', ['create'])
         },
+        {
+          provide: Router,
+          useFactory: _stubRouter
+        },
+        {
+          provide: ActionSheetController,
+          useFactory: _stubActionSheetController
+        }
       ]
     })
     .compileComponents();
@@ -143,6 +157,46 @@ describe('ProfilePage', () => {
     xit('deletes track when Delete button is clicked');
   });
 
+  describe('Action Button', () => {
+
+    it('renders action list when clicked', () => {
+      _getActionsButton().click();
+      fixture.detectChanges();
+      expect(actionSheetController.create).toHaveBeenCalled();
+      const [actionSheetConfig] = actionSheetController.create.calls.first().args;
+      expect(actionSheetConfig.buttons.length).toEqual(2);
+
+      const actionSheetDelay = 3;
+      setTimeout(() => {
+        expect(actionSheet.present).toHaveBeenCalled();
+      }, actionSheetDelay);
+    });
+
+    it('navigates to new track page when "Create new track" button is clicked', () => {
+      _getActionsButton().click();
+      fixture.detectChanges();
+
+      const [actionSheetConfig] = actionSheetController.create.calls.first().args;
+      const createNewTrackButton = actionSheetConfig
+        .buttons
+        .find((button) => button.text === 'Create new track');
+      createNewTrackButton.handler();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/new-track']);
+    });
+
+    it('contains a "cancel" button', () => {
+      _getActionsButton().click();
+      fixture.detectChanges();
+
+      const [actionSheetConfig] = actionSheetController.create.calls.first().args;
+      const cancelButton = actionSheetConfig
+        .buttons
+        .find((button) => button.role === 'cancel');
+      expect(cancelButton).toBeTruthy();
+    });
+  });
+
   function _stubTrackClient() {
     trackClientMock = TestBed.get(TrackHttpClient);
     trackClientMock.getTracks.and.returnValue(new Observable(
@@ -163,5 +217,34 @@ describe('ProfilePage', () => {
       .debugElement
       .query(By.css('hll-track-list'))
       .componentInstance as TrackListComponent;
+  }
+
+  function _stubRouter() {
+    router = jasmine.createSpyObj('router', [
+      'navigate'
+    ]);
+    return router;
+  }
+
+  function _getActionsButton(): HTMLElement {
+    return fixture
+      .nativeElement
+      .querySelector('#actions-button');
+  }
+
+  function _stubActionSheetController() {
+    actionSheetController = jasmine.createSpyObj('ActionSheetController', [
+      'create'
+    ]);
+
+    actionSheet = jasmine.createSpyObj('actionSheet', [
+      'present'
+    ]);
+
+    actionSheetController.create.and.returnValue(new Promise((resolve) => {
+      resolve(actionSheet);
+    }));
+
+    return actionSheetController;
   }
 });

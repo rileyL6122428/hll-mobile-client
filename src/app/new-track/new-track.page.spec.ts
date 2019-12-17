@@ -1,6 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NewTrackPage } from './new-track.page';
 import { LoadingController, ToastController, AlertController, IonInput } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -8,10 +7,9 @@ import { AuthService } from '../shared/auth/auth.service';
 import { TrackHttpClient } from 'hll-shared-client';
 import { Observer, Observable } from 'rxjs';
 import { MockComponent } from 'ng-mocks';
-import { By } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
 
-fdescribe('NewTrackPage', () => {
+describe('NewTrackPage', () => {
   let component: NewTrackPage;
   let fixture: ComponentFixture<NewTrackPage>;
 
@@ -182,6 +180,24 @@ fdescribe('NewTrackPage', () => {
         done();
       }, shortLoaderDelay + environment.minUploadTrackDelay + shortAlertCreationDelay + 1);
     });
+
+    it('navigates to the profile page when failure alert is closed', (done) => {
+      const shortLoaderDelay = 3;
+
+      setTimeout(() => {
+        uploadObserver.error('EXAMPLE_UPLOAD_ERROR');
+      }, shortLoaderDelay);
+
+      setTimeout(() => {
+        const [ alertParams ] = alertController.create.calls.first().args;
+        const cancelButtons = alertParams.buttons.filter((button) => button.role === 'cancel');
+        expect(cancelButtons.length).toBe(1);
+        cancelButtons[0].handler();
+        expect(router.navigate).toHaveBeenCalledWith(['/profile']);
+        done();
+      }, shortLoaderDelay + environment.minUploadTrackDelay + 1);
+
+    });
   });
 
   function _stubLoadingController(): any {
@@ -239,7 +255,9 @@ fdescribe('NewTrackPage', () => {
       'present'
     ]);
 
-    alertController.create.and.returnValue(mobileAlert);
+    alertController.create.and.returnValue(new Promise((resolve) => {
+      resolve(mobileAlert);
+    }));
 
     return alertController;
   }
@@ -254,13 +272,6 @@ fdescribe('NewTrackPage', () => {
     ));
 
     return trackClient;
-  }
-
-  function _getTrackNameInput(): IonInput {
-    return fixture
-      .debugElement
-      .query(By.css('ion-input'))
-      .componentInstance;
   }
 
   function _getSubmitButton(): HTMLButtonElement {

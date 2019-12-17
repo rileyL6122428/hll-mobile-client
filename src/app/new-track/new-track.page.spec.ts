@@ -295,10 +295,4 @@ describe('NewTrackPage', () => {
       .nativeElement
       .querySelector('#submit-button');
   }
-
-  function _getFileInput(): HTMLInputElement {
-    return fixture
-      .nativeElement
-      .querySelector('#track-contents');
-  }
 });

@@ -25,7 +25,6 @@ export class ProfilePage {
   ) { }
 
   ionViewWillEnter(): void {
-    debugger;
     this.fetchUserTracks();
   }
 
@@ -66,7 +65,6 @@ export class ProfilePage {
   }
 
   private deleteTrack(targetTrack: Track): void {
-    debugger;
     this.trackClient.delete({
       track: targetTrack,
       bearerToken: this.auth.idToken

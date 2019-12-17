@@ -67,7 +67,6 @@ describe('ProfilePage', () => {
     })
     .compileComponents();
 
-    _stubTrackClient();
     _stubAlertController();
   }));
 

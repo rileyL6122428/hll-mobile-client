@@ -10,6 +10,7 @@ import { TrackListComponent } from '../shared/components/track-list/track-list.c
 import { Track } from '../shared/components/track-list/track.model';
 import { ProfilePage } from './profile.page';
 import { Router } from '@angular/router';
+import { AuthService } from '../shared/auth/auth.service';
 
 describe('ProfilePage', () => {
   let component: ProfilePage;
@@ -25,10 +26,12 @@ describe('ProfilePage', () => {
   let actionSheetController: { create: jasmine.Spy };
   let actionSheet: { present: jasmine.Spy };
 
-  let trackClientMock: { getTracks: jasmine.Spy };
+  let trackClientMock: { getTracks: jasmine.Spy, delete: jasmine.Spy };
   let getTracksObserver: Observer<Track[]>;
 
   let router: { navigate: jasmine.Spy };
+
+  let auth: { idToken: string };
 
   let fetchedTracks: Track[];
 
@@ -42,7 +45,7 @@ describe('ProfilePage', () => {
       providers: [
         {
           provide: TrackHttpClient,
-          useValue: jasmine.createSpyObj('TrackClient', ['getTracks'])
+          useFactory: _stubTrackClient
         },
         {
           provide: AlertController,
@@ -55,21 +58,24 @@ describe('ProfilePage', () => {
         {
           provide: ActionSheetController,
           useFactory: _stubActionSheetController
+        },
+        {
+          provide: AuthService,
+          useFactory: _stubAuthService
         }
       ]
     })
     .compileComponents();
 
-    _stubTrackClient();
     _stubAlertController();
   }));
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     fixture = TestBed.createComponent(ProfilePage);
     component = fixture.componentInstance;
-  });
+  }));
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     fetchedTracks = [
       {
         name: 'EXAMPLE_TRACK_1',
@@ -87,15 +93,20 @@ describe('ProfilePage', () => {
       }
     ];
 
-    environment.minGetTracksDelay = 5;
+    environment.minGetTracksDelay = 1;
+
+    component.ionViewWillEnter();
     fixture.detectChanges();
-  });
+
+    getTracksObserver.next(fetchedTracks);
+    fixture.detectChanges();
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('init', () => {
+  describe('ionViewWillEnter', () => {
     it('renders a list of null tracks by default', () => {
       const trackListComponent = _getTrackListComponent();
       expect(trackListComponent.tracks)
@@ -108,7 +119,7 @@ describe('ProfilePage', () => {
       });
     });
 
-    it('renders tracks in tracklist when "fetch tracks" API call completes', (done) => {
+    it('renders tracks in TrackListComponent when "fetch tracks" API call completes', (done) => {
       getTracksObserver.next(fetchedTracks);
       fixture.detectChanges();
 
@@ -124,11 +135,15 @@ describe('ProfilePage', () => {
   });
 
   describe('Track Deletion', () => {
-    it('renders a modal with appropriate config when a "delete track" event is emitted', () => {
-      const secondTrack = fetchedTracks[1];
+    let secondTrack;
+
+    beforeEach(() => {
+      secondTrack = fetchedTracks[1];
       _getTrackListComponent().delete.emit(secondTrack);
       fixture.detectChanges();
+    });
 
+    it('renders a modal when a "delete track" event is emitted', () => {
       expect(alertControllerMock.create).toHaveBeenCalled();
       const [alertConfig] = alertControllerMock.create.calls.first().args;
       expect(alertConfig.header)
@@ -141,10 +156,6 @@ describe('ProfilePage', () => {
     });
 
     it('presents "delete track" modal after it is configured', (done) => {
-      const secondTrack = fetchedTracks[1];
-      _getTrackListComponent().delete.emit(secondTrack);
-      fixture.detectChanges();
-
       const alert = jasmine.createSpyObj('alert', ['present']);
       alertPromiseControls.resolve(alert);
       alertPromise.then(() => {
@@ -153,8 +164,22 @@ describe('ProfilePage', () => {
       });
     });
 
-    xit('closes modal when cancel button is clicked');
-    xit('deletes track when Delete button is clicked');
+    it('delegates track deletion to TrackHttpClient when Delete button is clicked', () => {
+      _getDeleteButton().handler();
+      expect(trackClientMock.delete).toHaveBeenCalledWith({
+        track: secondTrack,
+        bearerToken: auth.idToken
+      });
+    });
+
+    it('removes deleted track from list provided to TrackListComponent', () => {
+      _getDeleteButton().handler();
+      fixture.detectChanges();
+
+      const trackListComponent = _getTrackListComponent();
+      expect(trackListComponent.tracks.length).toEqual(1);
+      expect(trackListComponent.tracks[0]).not.toBe(secondTrack);
+    });
   });
 
   describe('Action Button', () => {
@@ -197,11 +222,27 @@ describe('ProfilePage', () => {
     });
   });
 
+  function _getDeleteButton() {
+    const [alertConfig] = alertControllerMock.create.calls.first().args;
+    return alertConfig
+      .buttons
+      .find((button) => button.text === 'Delete');
+  }
+
   function _stubTrackClient() {
-    trackClientMock = TestBed.get(TrackHttpClient);
+    trackClientMock = jasmine.createSpyObj('TrackClient', ['getTracks', 'delete']);
     trackClientMock.getTracks.and.returnValue(new Observable(
       observer => getTracksObserver = observer
     ));
+
+    trackClientMock.delete.and.returnValue(new Observable());
+
+    return trackClientMock;
+  }
+
+  function _stubAuthService() {
+    auth = { idToken: 'EXAMPLE_ID_TOKEN' };
+    return auth;
   }
 
   function _stubAlertController() {

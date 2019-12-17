@@ -1,18 +1,21 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { NewTrackPage } from './new-track.page';
-import { LoadingController, ToastController, AlertController } from '@ionic/angular';
+import { LoadingController, ToastController, AlertController, IonInput } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AuthService } from '../shared/auth/auth.service';
 import { TrackHttpClient } from 'hll-shared-client';
 import { Observer, Observable } from 'rxjs';
+import { MockComponent } from 'ng-mocks';
+import { By } from '@angular/platform-browser';
+import { environment } from 'src/environments/environment';
 
-describe('NewTrackPage', () => {
+fdescribe('NewTrackPage', () => {
   let component: NewTrackPage;
   let fixture: ComponentFixture<NewTrackPage>;
 
-  let loadingController: { create: jasmine.Spy }
+  let loadingController: { create: jasmine.Spy, dismiss: jasmine.Spy };
   let loader: { present: jasmine.Spy };
 
   let toastController: { create: jasmine.Spy };
@@ -30,7 +33,10 @@ describe('NewTrackPage', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NewTrackPage ],
+      declarations: [
+        NewTrackPage,
+        MockComponent(IonInput)
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
@@ -77,9 +83,10 @@ describe('NewTrackPage', () => {
     let trackContents: File;
 
     beforeEach(() => {
+      environment.minUploadTrackDelay = 10;
+
       trackName = 'EXAMPLE_TRACK_NAME';
-      _getTrackNameInput().value = trackName;
-      _getTrackNameInput().dispatchEvent(new Event('input'));
+      component.trackName = trackName;
 
       trackContents = new File([], 'EXAMPLE_LOCAL_FILE_NAME');
       component.onFileChange(trackContents);
@@ -89,14 +96,98 @@ describe('NewTrackPage', () => {
       fixture.detectChanges();
     });
 
-    xit('blocks the screen with a loader', () => {
+    it('renders a loading modal', (done) => {
+      const shortDelay = 3;
+      setTimeout(() => {
+        expect(loader.present).toHaveBeenCalled();
+        done();
+      }, shortDelay);
+    });
 
+    it('delegates track upload to the track client', (done) => {
+      const shortDelay = 3;
+      setTimeout(() => {
+        expect(trackClient.upload).toHaveBeenCalledWith({
+          name: trackName,
+          contents: trackContents,
+          bearerToken: auth.idToken
+        });
+        done();
+      }, shortDelay);
+    });
+
+    it('dismisses the loader when track is successfully uploaded', (done) => {
+
+      const shortLoaderDelay = 3;
+      setTimeout(() => {
+        uploadObserver.next('EXAMPLE_UPLOAD_RETURN_VALUE');
+      }, shortLoaderDelay);
+
+      setTimeout(() => {
+        expect(loadingController.dismiss).toHaveBeenCalled();
+        done();
+      }, shortLoaderDelay + environment.minUploadTrackDelay);
+    });
+
+    it('renders a toast message when track is successfully uploaded', (done) => {
+      const shortLoaderDelay = 3;
+
+      setTimeout(() => {
+        uploadObserver.next('EXAMPLE_UPLOAD_RETURN_VALUE');
+      }, shortLoaderDelay);
+
+      setTimeout(() => {
+        expect(toastController.create).toHaveBeenCalled();
+        done();
+      }, shortLoaderDelay + environment.minUploadTrackDelay + 1);
+    });
+
+    it('navigates to the profile page when track is successfully uploaded', (done) => {
+      const shortLoaderDelay = 3;
+      const shortToastCreatioDelay = 3;
+
+      setTimeout(() => {
+        uploadObserver.next('EXAMPLE_UPLOAD_RETURN_VALUE');
+      }, shortLoaderDelay);
+
+      setTimeout(() => {
+        expect(router.navigate).toHaveBeenCalledWith(['/profile']);
+        done();
+      }, shortLoaderDelay + environment.minUploadTrackDelay + shortToastCreatioDelay + 1);
+    });
+
+    it('dismisses the loader when track upload fails', (done) => {
+      const shortLoaderDelay = 3;
+
+      setTimeout(() => {
+        uploadObserver.error('EXAMPLE_UPLOAD_ERROR');
+      }, shortLoaderDelay);
+
+      setTimeout(() => {
+        expect(loadingController.dismiss).toHaveBeenCalled();
+        done();
+      }, shortLoaderDelay + environment.minUploadTrackDelay + 1);
+    });
+
+    it('shows an alert when track upload fails', (done) => {
+      const shortLoaderDelay = 3;
+      const shortAlertCreationDelay = 3;
+
+      setTimeout(() => {
+        uploadObserver.error('EXAMPLE_UPLOAD_ERROR');
+      }, shortLoaderDelay);
+
+      setTimeout(() => {
+        expect(alertController.create).toHaveBeenCalled();
+        done();
+      }, shortLoaderDelay + environment.minUploadTrackDelay + shortAlertCreationDelay + 1);
     });
   });
 
   function _stubLoadingController(): any {
     loadingController = jasmine.createSpyObj('loadingController', [
-      'create'
+      'create',
+      'dismiss'
     ]);
 
     loader = jasmine.createSpyObj('loader', [
@@ -161,12 +252,15 @@ describe('NewTrackPage', () => {
     trackClient.upload.and.returnValue(new Observable(
       (observer) => uploadObserver = observer
     ));
+
+    return trackClient;
   }
 
-  function _getTrackNameInput(): HTMLInputElement {
+  function _getTrackNameInput(): IonInput {
     return fixture
-      .nativeElement
-      .querySelector('input[type="text"]');
+      .debugElement
+      .query(By.css('ion-input'))
+      .componentInstance;
   }
 
   function _getSubmitButton(): HTMLButtonElement {

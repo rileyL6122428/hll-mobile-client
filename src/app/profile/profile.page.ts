@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { TrackHttpClient } from 'hll-shared-client';
 import { Track } from '../shared/components/track-list/track.model';
 import { AlertController, ActionSheetController } from '@ionic/angular';
@@ -12,7 +12,7 @@ import { AuthService } from '../shared/auth/auth.service';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss']
 })
-export class ProfilePage implements OnInit {
+export class ProfilePage {
 
   tracks: Track[];
 
@@ -24,11 +24,8 @@ export class ProfilePage implements OnInit {
     private auth: AuthService
   ) { }
 
-  ngOnInit() {
-    // this.fetchUserTracks();
-  }
-
   ionViewWillEnter(): void {
+    debugger;
     this.fetchUserTracks();
   }
 
@@ -56,25 +53,27 @@ export class ProfilePage implements OnInit {
         {
           text: 'Cancel',
           role: 'cancel',
-          cssClass: 'color-danger modal-button-color',
-          handler: () => {
-            console.log('DELETE TRACK CANCELLED');
-          }
+          cssClass: 'color-danger modal-button-color'
         },
         {
           text: 'Delete',
           cssClass: 'danger ion-color-danger',
-          handler: () => {
-            console.log('DELETE TRACK CONFIRMED');
-            this.trackClient.delete({
-              track,
-              bearerToken: this.auth.idToken
-            })
-          }
+          handler: () => this.deleteTrack(track)
         }
       ]
     })
       .then((alert) => alert.present());
+  }
+
+  private deleteTrack(targetTrack: Track): void {
+    debugger;
+    this.trackClient.delete({
+      track: targetTrack,
+      bearerToken: this.auth.idToken
+    })
+      .subscribe();
+
+    this.tracks = this.tracks.filter(track => track !== targetTrack);
   }
 
   async presentActionsList() {

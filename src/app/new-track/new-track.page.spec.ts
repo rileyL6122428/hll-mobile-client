@@ -78,7 +78,7 @@ describe('NewTrackPage', () => {
 
   describe('ionViewWillEnter', () => {
 
-    it('resets track form fields', () => {
+    it('resets track name', () => {
       component.trackName = 'EXAMPLE_TRACK_NAME';
       fixture.detectChanges();
 
@@ -158,7 +158,7 @@ describe('NewTrackPage', () => {
 
     it('navigates to the profile page when track is successfully uploaded', (done) => {
       const shortLoaderDelay = 3;
-      const shortToastCreatioDelay = 3;
+      const shortToastCreationDelay = 3;
 
       setTimeout(() => {
         uploadObserver.next('EXAMPLE_UPLOAD_RETURN_VALUE');
@@ -167,7 +167,7 @@ describe('NewTrackPage', () => {
       setTimeout(() => {
         expect(router.navigate).toHaveBeenCalledWith(['/profile']);
         done();
-      }, shortLoaderDelay + environment.minUploadTrackDelay + shortToastCreatioDelay + 1);
+      }, shortLoaderDelay + environment.minUploadTrackDelay + shortToastCreationDelay + 1);
     });
 
     it('dismisses the loader when track upload fails', (done) => {

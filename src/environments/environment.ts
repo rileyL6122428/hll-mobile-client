@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   skipAuth: true,
-  minGetTracksDelay: 1000
+  minGetTracksDelay: 1000,
+  minUploadTrackDelay: 1000
 };
 
 /*

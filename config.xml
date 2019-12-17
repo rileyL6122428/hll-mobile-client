@@ -114,4 +114,6 @@
         <variable name="ANDROID_HOST" value="dev-kfaat8-8.auth0.com" />
         <variable name="ANDROID_PATHPREFIX" value="/cordova/io.ionic.starter/callback" />
     </plugin>
+    <allow-navigation href="192.168.1.70" sessionid="c32405e2" />
+    <allow-navigation href="192.168.1.70:8100" sessionid="a1f3529b" />
 </widget>

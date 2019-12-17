@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { TrackHttpClient } from 'hll-shared-client';
 import { Track } from '../shared/components/track-list/track.model';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ActionSheetController } from '@ionic/angular';
 import { zip, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'hll-profile',
   templateUrl: './profile.page.html',
-  styleUrls: ['./profile.page.scss'],
+  styleUrls: ['./profile.page.scss']
 })
 export class ProfilePage implements OnInit {
 
@@ -16,10 +17,16 @@ export class ProfilePage implements OnInit {
 
   constructor(
     private trackClient: TrackHttpClient,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private actionSheetController: ActionSheetController,
+    private router: Router
   ) { }
 
   ngOnInit() {
+    this.fetchUserTracks();
+  }
+
+  private fetchUserTracks(): void {
     const skeletonTracks = [null, null, null, null, null];
     this.tracks = skeletonTracks;
 
@@ -58,6 +65,30 @@ export class ProfilePage implements OnInit {
       ]
     })
       .then((alert) => alert.present());
+  }
+
+  async presentActionsList() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Actions',
+      cssClass: 'track-actions',
+      buttons: [
+        {
+          text: 'Create new track',
+          handler: () => {
+            this.router.navigate(['/new-track']);
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('CANCEL CLICKED');
+          }
+        }
+      ]
+    });
+
+    await actionSheet.present();
   }
 
 }

@@ -5,7 +5,7 @@
         <ng-container *ngIf="audio?.paused; else pauseButton">
           <ion-item-option
             class="play-button"
-            color="secondary"
+            color="dark"
             (click)="emitPlay(track); audio?.play();">
               Play
           </ion-item-option>
@@ -13,7 +13,7 @@
         <ng-template #pauseButton>
           <ion-item-option
             class="pause-button"
-            color="secondary"
+            color="dark"
             (click)="emitPause(track); audio?.pause();">
               Stop
           </ion-item-option>
@@ -27,7 +27,7 @@
             </span>
             <ion-progress-bar
               [value]="audio.currentTime / track.duration"
-              [color]="audio.paused ? 'light' : 'secondary'"
+              [color]="audio.paused ? 'light' : 'dark'"
               type="determinate">
             </ion-progress-bar>
             <audio
@@ -43,7 +43,7 @@
       <ion-item-options side="end">
         <ion-item-option
           class="delete-button"
-          color="danger"
+          color="medium"
           (click)="emitDelete(track)">
             Delete
         </ion-item-option>

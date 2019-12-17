@@ -106,7 +106,7 @@ describe('ProfilePage', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('init', () => {
+  describe('ionViewWillEnter', () => {
     it('renders a list of null tracks by default', () => {
       const trackListComponent = _getTrackListComponent();
       expect(trackListComponent.tracks)
@@ -119,7 +119,7 @@ describe('ProfilePage', () => {
       });
     });
 
-    it('renders tracks in tracklist when "fetch tracks" API call completes', (done) => {
+    it('renders tracks in tracklist component when "fetch tracks" API call completes', (done) => {
       getTracksObserver.next(fetchedTracks);
       fixture.detectChanges();
 
@@ -135,11 +135,15 @@ describe('ProfilePage', () => {
   });
 
   describe('Track Deletion', () => {
-    it('renders a modal with appropriate config when a "delete track" event is emitted', () => {
-      const secondTrack = fetchedTracks[1];
+    let secondTrack;
+
+    beforeEach(() => {
+      secondTrack = fetchedTracks[1];
       _getTrackListComponent().delete.emit(secondTrack);
       fixture.detectChanges();
+    });
 
+    it('renders a modal when a "delete track" event is emitted', () => {
       expect(alertControllerMock.create).toHaveBeenCalled();
       const [alertConfig] = alertControllerMock.create.calls.first().args;
       expect(alertConfig.header)
@@ -152,10 +156,6 @@ describe('ProfilePage', () => {
     });
 
     it('presents "delete track" modal after it is configured', (done) => {
-      const secondTrack = fetchedTracks[1];
-      _getTrackListComponent().delete.emit(secondTrack);
-      fixture.detectChanges();
-
       const alert = jasmine.createSpyObj('alert', ['present']);
       alertPromiseControls.resolve(alert);
       alertPromise.then(() => {
@@ -164,11 +164,7 @@ describe('ProfilePage', () => {
       });
     });
 
-    it('delegates track deletion when Delete button is clicked', () => {
-      const secondTrack = fetchedTracks[1];
-      _getTrackListComponent().delete.emit(secondTrack);
-      fixture.detectChanges();
-
+    it('delegates track deletion to TrackHttpClient when Delete button is clicked', () => {
       _getDeleteButton().handler();
       expect(trackClientMock.delete).toHaveBeenCalledWith({
         track: secondTrack,
@@ -176,17 +172,13 @@ describe('ProfilePage', () => {
       });
     });
 
-    it('removes deleted track from track list', () => {
-      const secondTrack = fetchedTracks[1];
-      _getTrackListComponent().delete.emit(secondTrack);
-      fixture.detectChanges();
-
+    it('removes deleted track from list provided to TrackListComponent', () => {
       _getDeleteButton().handler();
       fixture.detectChanges();
 
       const trackListComponent = _getTrackListComponent();
       expect(trackListComponent.tracks.length).toEqual(1);
-      expect(trackListComponent.tracks[0]).toBe(fetchedTracks[0]);
+      expect(trackListComponent.tracks[0]).not.toBe(secondTrack);
     });
   });
 

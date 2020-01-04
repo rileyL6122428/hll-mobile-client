@@ -20,4 +20,6 @@ An iPhone client for uploading and streaming audio files. Consumes the [Hey Look
 
 ![Upload Page](/docs/pics/Upload-Page.jpg)
 
+* **Delete Track (Profile Page)**
 
+![Delete Track](/docs/pics/Delete-Page.jpg)

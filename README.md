@@ -1,6 +1,6 @@
 # Hey Look Listen Mobile Client
 
-An iPhone client for uploading and streaming audio files. Consumes the [Hey Look Listen API](https://github.com/rileyL6122428/hll-api).
+An iPhone client for uploading and streaming mp3 files. Consumes the [Hey Look Listen API](https://github.com/rileyL6122428/hll-api).
 
 ## Screenshots
 
